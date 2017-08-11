@@ -34,7 +34,7 @@ renderOutputFormat JSON = "json"
 
 createRequest :: (MonadIO m, MonadThrow m) => Manager -> Function -> Symbol -> OutputFormat -> APIKey -> Maybe OutputSize -> m (Either String (Vector Bar))
 createRequest man fun sym fmt (APIKey key) size = do
-  req <- parseRequest "https://www.alphavantage.co/query" >>= return . setQueryString params
+  req <- parseRequest "https://www.alphavantage.co/query" >>= return . setQueryString params >>= \ x -> return x{responseTimeout = responseTimeoutNone}
   liftIO $ withResponse req man $ \ response -> do
     case fmt of
       CSV -> do
