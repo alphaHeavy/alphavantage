@@ -39,7 +39,9 @@ instance FromField Decimal where
   parseField = pure . read . T.unpack . TE.decodeUtf8
 
 instance FromField LocalTime where
-  parseField = parseTimeM True defaultTimeLocale "%F" . T.unpack . TE.decodeUtf8
+  parseField x = case parseTimeM True defaultTimeLocale "%F" $ T.unpack $ TE.decodeUtf8 x of
+                   Just y -> return y
+                   Nothing -> parseTimeM True defaultTimeLocale "%Y-%m-%d %H:%M" $ T.unpack $ TE.decodeUtf8 x
 
 instance FromRecord Bar where
   parseRecord v
