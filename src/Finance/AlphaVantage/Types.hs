@@ -5,6 +5,7 @@ module Finance.AlphaVantage.Types (
     APIKey (..)
   , Bar (..)
   , Function (..)
+  , IntradayInterval (..)
   , OutputFormat (..)
   , OutputSize (..)
   , Symbol (..)
@@ -33,7 +34,7 @@ data Bar = Bar {
   bLow :: Decimal,
   bClose :: Decimal,
   bVolume :: Int
-}
+} deriving (Show)
 
 instance FromField Decimal where
   parseField = pure . read . T.unpack . TE.decodeUtf8
@@ -41,7 +42,7 @@ instance FromField Decimal where
 instance FromField LocalTime where
   parseField x = case parseTimeM True defaultTimeLocale "%F" $ T.unpack $ TE.decodeUtf8 x of
                    Just y -> return y
-                   Nothing -> parseTimeM True defaultTimeLocale "%Y-%m-%d %H:%M" $ T.unpack $ TE.decodeUtf8 x
+                   Nothing -> parseTimeM True defaultTimeLocale "%Y-%m-%d %H:%M:%S" $ T.unpack $ TE.decodeUtf8 x
 
 instance FromRecord Bar where
   parseRecord v
@@ -51,3 +52,5 @@ instance FromRecord Bar where
 newtype APIKey = APIKey Text
 
 data Function = Daily | DailyAdjusted | Intraday deriving (Eq)
+
+data IntradayInterval = OneMinute | FiveMinute | FifteenMinute | ThirtyMinute | SixtyMinute deriving (Eq)
